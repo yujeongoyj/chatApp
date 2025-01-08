@@ -28,6 +28,7 @@
         android:inputType="textEmailAddress"
         android:paddingStart="15dp"/>
 
+
     <EditText
         android:id="@+id/password_edit"
         android:layout_width="match_parent"

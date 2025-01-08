@@ -8,7 +8,7 @@
     android:layout_marginBottom="10dp"
     tools:context=".ChatActivity">
 
-   <!--대화 내용-->
+    <!--대화 내용-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chat_recyclerView"
         android:layout_width="match_parent"
@@ -22,18 +22,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
         android:orientation="horizontal"
         android:weightSum="100">
 
-    <EditText
-        android:id="@+id/message_edit"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_marginStart="10dp"
-        android:layout_weight="85"
-        android:background="@drawable/edit_back"
-        android:hint="메시지를 입력하세요"
-        android:paddingStart="10dp"/>
+        <EditText
+            android:id="@+id/message_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginStart="10dp"
+            android:layout_weight="85"
+            android:background="@drawable/edit_back"
+            android:hint="메시지를 입력하세요"
+            android:paddingStart="10dp" />
 
         <!--전송 버튼- -->
         <androidx.appcompat.widget.AppCompatButton
@@ -43,9 +44,9 @@
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:layout_weight="15"
-            android:textColor="@color/white"
             android:background="@drawable/btn_backgroud"
-            android:text="전송" />
+            android:text="전송"
+            android:textColor="@android:color/white" />
 
 
     </LinearLayout>
