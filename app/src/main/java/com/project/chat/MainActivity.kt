@@ -1,6 +1,9 @@
 package com.project.chat
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -26,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mDbRef: DatabaseReference
 
     // 데이터를 담을 UserList
-    private lateinit var userList:ArrayList<User>
+    private lateinit var userList: ArrayList<User>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,16 +52,16 @@ class MainActivity : AppCompatActivity() {
 
         // Realtime Database에서 사용자 정보 가져오기
         // 이 DB 객체를 통해서 user에 있는 데이터를 가져오겠다는 뜻
-        mDbRef.child("user").addValueEventListener(object :ValueEventListener {
+        mDbRef.child("user").addValueEventListener(object : ValueEventListener {
             // onDataChange 함수는 데이터가 변경되면 실행
             override fun onDataChange(snapshot: DataSnapshot) {
                 // onDataChange 함수 매개변수인 snapshot에 데이터베이스가 들어있고 그 내용들을 posSnapshot에 넣음
-                for(postSnapshot in snapshot.children) {
+                for (postSnapshot in snapshot.children) {
                     // 하지만 채팅앱이므로 로그인했을때 본인 제외한 유저가 보여야함
                     val currentUser = postSnapshot.getValue(User::class.java)
                     // 저 currentUser 안에 실제 사용자 정보 넣기
                     // mAuth(인증 객체)로 현재 로그인한 uid를 알 수 있음
-                    if(mAuth.currentUser?.uid != currentUser?.uId) { // 내 id와 등록된 사용자 id가 다를 때만
+                    if (mAuth.currentUser?.uid != currentUser?.uId) { // 내 id와 등록된 사용자 id가 다를 때만
                         userList.add(currentUser!!)
                     }
                 }
@@ -72,7 +75,25 @@ class MainActivity : AppCompatActivity() {
 
         })
 
-
-
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        // 상단 메뉴 연결하기
+        menuInflater.inflate(R.menu.menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    // 메뉴 안 로그아웃 아이템 선택했을 때 인증 서비스에서 로그아웃 & 로그인 화면 이동
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.log_out) {
+            mAuth.signOut()
+            val intent = Intent(this@MainActivity, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+            return true
+        }
+        return true
+    }
+
+
 }
