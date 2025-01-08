@@ -1,6 +1,7 @@
 package com.project.chat
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,6 +40,17 @@ class UserAdapter(private val context: Context, private val userList: ArrayList<
         val currentUser = userList[position]
         // currentUser에 있는 이름을 텍스트뷰에 넣기
         holder.nameText.text = currentUser.name
+
+        // 아이템 클릭 이벤트
+        holder.itemView.setOnClickListener {
+            val intent = Intent(context, ChatActivity::class.java)
+            // 넘길 데이터
+            // intent에 name과 uId를 담아서 StartActivity에 전달
+            // -> ChatActivity에서도 intent를 통해 데이터를 받을 수 있음
+            intent.putExtra("name", currentUser.name)
+            intent.putExtra("uId", currentUser.uId)
+            context.startActivity(intent)
+        }
     }
 
     // 실제 리스트의 갯수를 가져오는 함수
