@@ -5,10 +5,16 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.project.chat.databinding.ActivityChatBinding
+
+import kotlin.collections.ArrayList
 
 
 class ChatActivity : AppCompatActivity() {
@@ -24,6 +30,8 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var receiverRoom: String // 받는 대화방
     private lateinit var senderRoom: String // 보낸 대화방
 
+    // 메시지 담을 변수
+    private lateinit var messageList: ArrayList<Message>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,8 +44,17 @@ class ChatActivity : AppCompatActivity() {
             insets
         }
 
+        // 초기화
+        messageList = ArrayList()
+        val messageAdapter: MessageAdapter = MessageAdapter(this, messageList)
+
+        // RecyclerView
+        binding.chatRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.chatRecyclerView.adapter = messageAdapter
+
         // 넘어온 데이터 intent로 꺼내와 변수에 담기
-        receiverName = intent.getStringExtra("name").toString() // UserAdapter로부터 "name" 키로 전달된 데이터 받기
+        receiverName =
+            intent.getStringExtra("name").toString() // UserAdapter로부터 "name" 키로 전달된 데이터 받기
         receiverUid = intent.getStringExtra("uId").toString()  // "uId" 키로 전달된 데이터 받기
 
         mAuth = FirebaseAuth.getInstance()
@@ -66,10 +83,31 @@ class ChatActivity : AppCompatActivity() {
                     mDbRef.child("chats").child(receiverRoom).child("messages").push()
                         .setValue(messageObject)
                 }
+            // 메시지 보낸 후 입력 부분 초기화
+            binding.messageEdit.setText("")
         }
 
 
+        // messageAdapter로 연결한 메시지 데이터 가져오기
+        mDbRef.child("chats").child(senderRoom).child("messages")
+            .addValueEventListener(object : ValueEventListener {
 
+                // DB의 chat > senderRoom > message 내용에 변경이 생겼을 데이터를 가져오는 함수
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    messageList.clear()
+                    for (postSnapshot in snapshot.children) {
+                        val message = postSnapshot.getValue(Message::class.java)
+                        messageList.add(message!!) // !!는 널값이 아님을 보장하는 연산자
+                    }
+                    // 적용
+                    messageAdapter.notifyDataSetChanged()
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+
+                }
+
+            })
 
     }
 
